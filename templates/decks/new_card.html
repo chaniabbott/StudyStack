@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Add Card to "{{ deck.title }}"</h1>
+    {{ render_form(form, action=url_for('card_create', deck_id=deck.id),
+                   method='post', button_style='success') }}
+    <a href="{{ url_for('deck_detail', deck_id=deck.id) }}"
+       class="btn btn-outline-secondary mt-2">&larr; Back to Deck</a>
+</div>
+{% endblock %}
+{% endblock %}

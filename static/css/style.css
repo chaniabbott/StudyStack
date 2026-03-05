@@ -1,0 +1,119 @@
+body {
+    background-color: #f4f6f9;
+}
+
+/* ── Flashcard flip styles ── */
+.flashcard {
+    perspective: 800px;
+    height: 220px;
+    cursor: pointer;
+}
+
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease;
+    transform-style: preserve-3d;
+}
+
+.flashcard.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.flashcard-front {
+    background: linear-gradient(135deg, #ffc107, #ffca2c);
+    color: #333;
+}
+
+.flashcard-back {
+    background: linear-gradient(135deg, #198754, #20c997);
+    color: #fff;
+    transform: rotateY(180deg);
+}
+
+.flashcard-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+    position: absolute;
+    top: 0.75rem;
+    left: 1rem;
+    font-weight: 600;
+}
+
+.flashcard-front p,
+.flashcard-back p {
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 500;
+}
+
+.flashcard-hint {
+    font-size: 0.75rem;
+    opacity: 0.5;
+    position: absolute;
+    bottom: 0.75rem;
+}
+
+/* ── Practice mode ── */
+.practice-wrapper {
+    max-width: 560px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.practice-progress {
+    font-size: 0.95rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.practice-card-container {
+    position: relative;
+    min-height: 300px;
+}
+
+.practice-slide {
+    display: none;
+}
+
+.practice-slide.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.flashcard.flashcard-lg {
+    height: 300px;
+}
+
+.flashcard-lg .flashcard-front p,
+.flashcard-lg .flashcard-back p {
+    font-size: 1.35rem;
+}
+
+.practice-nav {
+    display: flex;
+    justify-content: space-between;
+}

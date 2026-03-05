@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>{{ deck.title }}</h2>
+    <p>{{ deck.description }}</p>
+
+    <div class="deck-actions d-flex flex-wrap align-items-center gap-2 mb-4">
+        <a href="{{ url_for('card_create', deck_id=deck.id) }}" class="btn btn-info">Add Card</a>
+
+        {% if deck.cards %}
+        <!-- Mode toggle buttons -->
+        <div class="btn-group deck-mode-toggle ms-md-auto" role="group">
+            <button class="btn btn-primary active" id="btn-browse" onclick="switchMode('browse')">Browse All</button>
+            <button class="btn btn-outline-primary" id="btn-practice" onclick="switchMode('practice')">Practice</button>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if deck.cards %}
+
+    <!-- ═══ BROWSE MODE ═══ -->
+    <div id="mode-browse">
+        <div class="row">
+            {% for card in deck.cards %}
+            <div class="col-md-6 mb-4">
+                <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <span class="flashcard-label">Question</span>
+                            <p>{{ card.question }}</p>
+                            <span class="flashcard-hint">Click to reveal answer</span>
+                        </div>
+                        <div class="flashcard-back">
+                            <span class="flashcard-label">Answer</span>
+                            <p>{{ card.answer }}</p>
+                            <span class="flashcard-hint">Click to see question</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ═══ PRACTICE MODE ═══ -->
+    <div id="mode-practice" style="display:none;">
+        <div class="practice-wrapper">
+            <div class="practice-progress mb-3">
+                Card <span id="practice-current">1</span> of <span id="practice-total">{{ deck.cards|length }}</span>
+            </div>
+
+            <div class="practice-card-container">
+                {% for card in deck.cards %}
+                <div class="practice-slide{% if loop.first %} active{% endif %}" data-index="{{ loop.index0 }}">
+                    <div class="flashcard flashcard-lg" onclick="this.classList.toggle('flipped')">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">
+                                <span class="flashcard-label">Question</span>
+                                <p>{{ card.question }}</p>
+                                <span class="flashcard-hint">Click to reveal answer</span>
+                            </div>
+                            <div class="flashcard-back">
+                                <span class="flashcard-label">Answer</span>
+                                <p>{{ card.answer }}</p>
+                                <span class="flashcard-hint">Click to see question</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="practice-nav mt-3">
+                <button class="btn btn-secondary" id="btn-prev" onclick="practiceNav(-1)">&#8592; Previous</button>
+                <button class="btn btn-primary" id="btn-next" onclick="practiceNav(1)">Next &#8594;</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ── Mode switching ── */
+        function switchMode(mode) {
+            document.getElementById('mode-browse').style.display  = mode === 'browse' ? '' : 'none';
+            document.getElementById('mode-practice').style.display = mode === 'practice' ? '' : 'none';
+
+            const btnBrowse  = document.getElementById('btn-browse');
+            const btnPractice = document.getElementById('btn-practice');
+            btnBrowse.className  = mode === 'browse'  ? 'btn btn-primary active' : 'btn btn-outline-primary';
+            btnPractice.className = mode === 'practice' ? 'btn btn-primary active' : 'btn btn-outline-primary';
+
+            if (mode === 'practice') practiceGo(0);
+        }
+
+        /* ── Practice navigation ── */
+        let currentIndex = 0;
+        const slides = document.querySelectorAll('.practice-slide');
+        const total  = slides.length;
+
+        function practiceGo(idx) {
+            currentIndex = idx;
+            slides.forEach(s => s.classList.remove('active'));
+            /* reset flip when leaving a card */
+            slides.forEach(s => s.querySelector('.flashcard').classList.remove('flipped'));
+            slides[currentIndex].classList.add('active');
+            document.getElementById('practice-current').textContent = currentIndex + 1;
+            document.getElementById('btn-prev').disabled = currentIndex === 0;
+            document.getElementById('btn-next').textContent = currentIndex === total - 1 ? 'Finish ✓' : 'Next →';
+        }
+
+        function practiceNav(dir) {
+            const next = currentIndex + dir;
+            if (next < 0) return;
+            if (next >= total) {
+                /* finished — show a quick congrats then reset */
+                switchMode('browse');
+                return;
+            }
+            practiceGo(next);
+        }
+    </script>
+
+    {% else %}
+    <p>No cards in this deck yet.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="rounded-3 p-5 bg-light">
+        <h1>Welcome to StudyStack</h1>
+        <p class="lead">Create flashcard decks and study smarter.</p>
+        {# TODO: change href to {{ url_for('deck_create') }} after you create that route #}
+        <a class="btn btn-primary" href="#">Create Your First Deck</a>
+    </div>
+{% endblock %}

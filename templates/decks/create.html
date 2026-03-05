@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Create a New Deck</h1>
+    {{ render_form(form, action=url_for('deck_create'), method='post',
+                   button_style='primary') }}
+</div>
+{% endblock %}
