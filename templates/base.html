@@ -14,11 +14,19 @@
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto">
                     {{ render_nav_item('home', 'Home') }}
-                    {# TODO: uncomment after you create deck_list and deck_create routes
-                    {{ render_nav_item('deck_list', 'My Decks') }}
-                    {{ render_nav_item('deck_create', 'Create Deck') }}
-                    #}
+                    {% if current_user.is_authenticated %}
+                    {{ render_nav_item('deck_list', 'My Decks', _use_li=True }}
+                    {{ render_nav_item('deck_create', 'Create Deck', _use_li=True }}
+                    {% endif %}
                 </ul>
+            <ul class='navbar-nav ms-auto'>
+            {% if current_user.is_anonymous %}
+            {{ render_nav_item('login','Login', _use_li=True) }}
+            {{ render_nav_item('register','Register', _use_li=True) }}
+            {% else %}
+                <li class="nav-item"><span class="nav-link">Welcome,  {{ current_user.username }}</span></li>
+            {{ render_nav_item('logout','Logout', _use_li=True) }}
+            </ul>
             </div>
         </div>
     </nav>
