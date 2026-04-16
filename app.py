@@ -1,7 +1,7 @@
 import os
 from urllib.parse import urlsplit
 
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash, request, abort
 from flask_bootstrap import Bootstrap5
 from flask_login import LoginManager, UserMixin, login_required, current_user,login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
@@ -39,7 +39,7 @@ class Deck(db.Model):
 class User(UserMixin, db.Model):
     id=db.Column(db.Integer, primary_key=True)
     username=db.Column(db.String(50), unique=True, nullable=False)
-    email=db.Column(db.String(120), unique=True, nullable=False)
+    email=db.Column(db.String(120), nullable=False)
     password=db.Column(db.String(255), nullable=False)
     created_at=db.Column(db.DateTime, server_default=db.func.now())
     decks=db.relationship('Deck', backref='owner', lazy='dynamic')
@@ -53,6 +53,7 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+
 
 
 class Card(db.Model):
@@ -125,7 +126,7 @@ def deck_create():
             title=form.title.data,
             description=form.description.data,
             is_public=form.is_public.data,
-            user_id=current_user.id
+            owner=current_user
         )
         db.session.add(deck)
         db.session.commit()
@@ -137,12 +138,19 @@ def deck_create():
 @app.route('/decks/<int:deck_id>')
 def deck_detail(deck_id):
     deck = db.get_or_404(Deck, deck_id)
+    #if deck is not public (is private) AND user is not authenticated or user does not match current user
+    if not deck.is_public and (not current_user.is_authenticates or deck.owner != current_user):
+        abort(403)
+
     return render_template('decks/detail.html', deck=deck)
 
 @app.route('/decks/<deck_id>/cards/new', methods=['GET','POST'])
+@login_required
 def card_create(deck_id):
-    form=CardForm()
     deck=db.get_or_404(Deck, deck_id)
+    if deck.owner != current_user:
+        abort(403)
+    form = CardForm()
     if form.validate_on_submit():
         card = Card(
             question=form.question.data,
