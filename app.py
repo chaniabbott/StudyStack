@@ -1,6 +1,5 @@
 import os
 from urllib.parse import urlsplit
-
 from flask import Flask, render_template, redirect, url_for, flash, request, abort
 from flask_bootstrap import Bootstrap5
 from flask_login import LoginManager, UserMixin, login_required, current_user,login_user, logout_user
@@ -9,6 +8,7 @@ from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms import StringField, TextAreaField, SubmitField, BooleanField, PasswordField
 from wtforms.validators import DataRequired, length, Length, EqualTo, ValidationError
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 bootstrap = Bootstrap5(app)
@@ -16,6 +16,7 @@ app.config['SECRET_KEY'] = os.environ.get('CSRF_SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI','sqlite:///studystack.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
@@ -42,6 +43,7 @@ class User(UserMixin, db.Model):
     email=db.Column(db.String(120), nullable=False)
     password=db.Column(db.String(255), nullable=False)
     created_at=db.Column(db.DateTime, server_default=db.func.now())
+    address = db.Column(db.Text)
     decks=db.relationship('Deck', backref='owner', lazy='dynamic')
 
 
@@ -103,12 +105,9 @@ class LoginForm(FlaskForm):
     password = PasswordField('',validators=[DataRequired(), Length(min=8,max=50)])
     submit = SubmitField('Login')
 
-with app.app_context():
-    db.create_all()
-
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('main/index.html')
 
 
 @app.route('/decks')
