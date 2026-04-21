@@ -4,7 +4,7 @@
     <p>{{ deck.description }}</p>
 
     <div class="deck-actions d-flex flex-wrap align-items-center gap-2 mb-4">
-        <a href="{{ url_for('card_create', deck_id=deck.id) }}" class="btn btn-info">Add Card</a>
+        <a href="{{ url_for('decks.card_create', deck_id=deck.id) }}" class="btn btn-info">Add Card</a>
 
         {% if deck.cards %}
         <!-- Mode toggle buttons -->

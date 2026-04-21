@@ -4,9 +4,9 @@
 {% block content %}
 <div class="container mt-4">
     <h1>Add Card to "{{ deck.title }}"</h1>
-    {{ render_form(form, action=url_for('card_create', deck_id=deck.id),
+    {{ render_form(form, action=url_for('decks.card_create', deck_id=deck.id),
                    method='post', button_style='success') }}
-    <a href="{{ url_for('deck_detail', deck_id=deck.id) }}"
+    <a href="{{ url_for('decks.deck_detail', deck_id=deck.id) }}"
        class="btn btn-outline-secondary mt-2">&larr; Back to Deck</a>
 </div>
 {% endblock %}
