@@ -21,6 +21,7 @@ def create_app(config_class=Config):
     bootstrap.init_app(app)
     login_manager.init_app(app)
     migrate.init_app(app, db)
+    from app.models import User, Deck, Card
 
     from app.auth.routes import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
@@ -36,4 +37,3 @@ def create_app(config_class=Config):
 
     return app
 
-from app import models
